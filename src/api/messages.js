@@ -1,37 +1,30 @@
 import axios from 'axios';
 
+import { request } from './helpers';
 import { formatTime } from 'components/Table/helpers';
 import { MESSAGE_ENDPOINT, GET_MESSAGE_LIST_ENDPOINT } from 'utils/endpoints';
 
-// TODO: dry these up
-const handleError = (err) => {
-  console.error(err);
-  return { success: false };
+export const addMessage = (message) => {
+  const endpoint = `${MESSAGE_ENDPOINT}/${message.user_id}`;
+  const data = {
+    ...message,
+    send_time: formatTime(message.send_time)
+  };
+
+  return request('post', endpoint, data);
 };
 
-export const addMessage = (message) =>
-  axios
-    .post(`${MESSAGE_ENDPOINT}/${message.user_id}`, {
-      ...message,
-      send_time: formatTime(message.send_time)
-    })
-    .then(({ data }) => data)
-    .catch(handleError);
+export const getMessagesFromDb = (userId) => {
+  const endpoint = `${GET_MESSAGE_LIST_ENDPOINT}/${userId}`;
+  return request('get', endpoint);
+};
 
-export const getMessagesFromDb = (userId) =>
-  axios
-    .get(`${GET_MESSAGE_LIST_ENDPOINT}/${userId}`)
-    .then(({ data }) => data)
-    .catch(handleError);
+export const deleteMessage = (userId, messageId) => {
+  const endpoint = `${MESSAGE_ENDPOINT}/${userId}/${messageId}`;
+  return request('delete', endpoint);
+};
 
-export const deleteMessage = (userId, messageId) =>
-  axios
-    .delete(`${MESSAGE_ENDPOINT}/${userId}/${messageId}`)
-    .then(({ data }) => data)
-    .catch(handleError);
-
-export const updateMessage = (userId, messageId, data) =>
-  axios
-    .put(`${MESSAGE_ENDPOINT}/${userId}/${messageId}`, data)
-    .then(({ data }) => data)
-    .catch(handleError);
+export const updateMessage = (userId, messageId, data) => {
+  const endpoint = `${MESSAGE_ENDPOINT}/${userId}/${messageId}`;
+  return request('put', endpoint, data);
+};

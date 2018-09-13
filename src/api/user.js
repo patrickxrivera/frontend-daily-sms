@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { registerUserSuccess } from 'redux/auth/dispatch';
-import { handleError } from './helpers';
+import { handleUserError, request } from './helpers';
 import {
   REGISTER_USER_ENDPOINT,
   VERIFY_USER_ENDPOINT,
@@ -11,13 +11,13 @@ const post = (endpoint) => (requestData) =>
   axios
     .post(endpoint, requestData)
     .then(({ data }) => data)
-    .catch(handleError);
+    .catch(handleUserError);
 
-export const verifyUser = (verificationCode, userId) =>
-  axios
-    .post(`${VERIFY_USER_ENDPOINT}/${userId}`, verificationCode)
-    .then(({ data }) => data)
-    .catch(handleError);
+export const verifyUser = (verificationCode, userId) => {
+  const endpoint = `${VERIFY_USER_ENDPOINT}/${userId}`;
+
+  return request('post', endpoint, verificationCode, handleUserError);
+};
 
 export const registerUser = post(REGISTER_USER_ENDPOINT);
 
